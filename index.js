@@ -1,60 +1,48 @@
-import { error } from 'node:console';
-import { createServer } from 'node:http';
+import express from 'express';
 import fs from 'fs';
 
-const hostname = '127.0.0.1';
+const app = express();
 const port = 8080;
 
-const server = createServer((req, res) => {
-    switch (req.url) {
-        case '/':
-            res.statusCode = 200;
-            res.setHeader('Content-Type', 'text/html');
-            fs.readFile('./index.html', 'utf-8', (error, data) => {
-                if (error) {
-                    console.log(error);
-                    return;
-                }
-                res.end(data);
-            });
-
-            break;
-        case '/about':
-            res.statusCode = 200;
-            res.setHeader('Content-Type', 'text/html');
-            fs.readFile('./about.html', 'utf-8', (error, data) => {
-                if (error) {
-                    console.log(error);
-                }
-                res.end(data);
-            });
-
-            break;
-        case '/contact-me':
-            res.statusCode = 200;
-            res.setHeader('Content-Type', 'text/html');
-            fs.readFile('./contact-me.html', 'utf-8', (error, data) => {
-                if (error) {
-                    console.log(error);
-                }
-                res.end(data);
-            });
-
-            break;
-        default:
-            res.statusCode = 200;
-            res.setHeader('Content-Type', 'text/html');
-            fs.readFile('./404.html', 'utf-8', (error, data) => {
-                if (error) {
-                    console.log(error);
-                }
-                res.end(data);
-            });
-
-            break;
-    }
+app.get('/', (req, res) => {
+    fs.readFile('./index.html', 'utf-8', (error, data) => {
+        if (error) {
+            console.log(error);
+            return;
+        }
+        res.send(data);
+    });
 });
 
-server.listen(port, hostname, () => {
-    console.log(`Server running at http://${hostname}:${port}/`);
+app.get('/about', (req, res) => {
+    fs.readFile('./about.html', 'utf-8', (error, data) => {
+        if (error) {
+            console.log(error);
+        }
+        res.send(data);
+    });
+});
+
+app.get('/contact-me', (req, res) => {
+    fs.readFile('./contact-me.html', 'utf-8', (error, data) => {
+        if (error) {
+            console.log(error);
+        }
+        res.send(data);
+    });
+});
+
+app.use((req, res) => {
+    fs.readFile('./404.html', 'utf-8', (error, data) => {
+        if (error) {
+            console.log(error);
+            return;
+        }
+
+        res.status(404).send(data);
+    });
+});
+
+app.listen(port, () => {
+    console.log(`Example app listening on port ${port}`);
 });
